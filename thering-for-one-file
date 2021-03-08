@@ -1,0 +1,18 @@
+#!/usr/bin/perl -w
+use Parallel::ForkManager;
+my $ips = $ARGV[0];
+my $max_procs = "1000";
+open( IPS,  "<$ips") || die " Cannot open the  word file : $ips ! \n";
+        chomp(@iplist = <IPS>);
+close(IPS);
+my $pm =  new Parallel::ForkManager($max_procs);
+foreach $ip (@iplist) {
+
+  my $pid = $pm->start() and next;
+
+  system("./scan.sh $ip  ");
+
+  $pm->finish(); # pass an exit code to finish
+}
+$pm->wait_all_children;
+
